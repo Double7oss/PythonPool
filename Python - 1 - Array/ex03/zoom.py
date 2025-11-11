@@ -1,38 +1,52 @@
-from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
+from load_image import ft_load
 
 
-def ft_zoom(path: str):
+def trim(
+        image: np.ndarray, top: int, left: int,
+        height: int, width: int, channels: int):
+    """
+        Trims the image by selecting a sub-region
+        based on specified top, left, height, and width.
+    """
+    return image[top:top+height, left:left+width, :channels]
+
+
+def zoom_image(pixel_data: np.ndarray):
     try:
-        img = Image.open(path)
-        img = img.convert("RGB")
-        arr = np.array(img)
-        
-        print(f"The shape of image is: {arr.shape}")
-        print(arr)
-        
-        h, w, _ = arr.shape
-        start_y = h // 2 - 200
-        end_y = h   // 2 + 200
-        start_x = w // 2 - 200
-        end_x = w  // 2 + 200
-        
-        zoomed = arr[start_y:end_y, start_x:end_x, [1, 3]]
-        print(f"New shape after slicing: {zoomed.shape}")
-        print(zoomed)
-        
-        plt.imshow(zoomed.squeeze(), cmap="gray")
-        plt.title("Zoomed Image (Green Channel)")
-        plt.xlabel("X axis (pixels)")
-        plt.ylabel("Y axis (pixels)")
+        # Trim the image (hardcoded values: top=450, left=100,
+        # height=400, width=400)
+        image_trimmed = trim(pixel_data, 100, 400, 400, 400, 1)
+
+        # Print new shape information after trimming
+        print(f'New shape after slicing: {image_trimmed.shape} or '
+            f'({image_trimmed.shape[0]}, {image_trimmed.shape[1]})')
+        print(image_trimmed)
+
+        # Display the trimmed image in grayscale
+        # Remove the single channel dimension
+        image_gray = np.squeeze(image_trimmed)
+        plt.imshow(image_gray, cmap='gray')  # Show the image in grayscale
+        plt.xlabel('')  # X-axis label
+        plt.ylabel('')  # Y-axis label
+        plt.title('Trimmed Grayscale Image')  # Title of the plot
         plt.show()
 
-    except FileNotFoundError:
-        print("Error: File not found. Please check the image path.")
     except Exception as e:
-        print(f"Unexpected error: {e}")
-        
+        print(f"Error during zooming: {e}")
+
+
+def main():
+    try:
+        # image path is : "../ex02/*.jpg"
+        pixel_data = ft_load("animal.jpeg")
+        if pixel_data is not None:
+            zoom_image(pixel_data)
+    except KeyboardInterrupt:
+        print("\nProcess interrupted by user (Ctrl+C). Exiting gracefully...")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    ft_zoom("blue_one.jpg")
+    main()

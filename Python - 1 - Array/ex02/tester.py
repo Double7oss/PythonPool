@@ -1,4 +1,4 @@
 from load_image import ft_load
 
 
-print(ft_load("blue_one.JPG"))
+print(ft_load("landscape.jpg"))
